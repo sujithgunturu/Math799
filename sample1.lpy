@@ -1,0 +1,67 @@
+import random as rd
+ 
+stagelength = 3
+nbcycle = 8
+leafduration = 20
+leafmaturation = 5
+angdev = 10
+leafel = -60
+radinc = 0.005
+ 
+def maxleafsize(s,maxs):
+  return ((maxs-s)*0.5/float(maxs))+0.5
+ 
+def leafsize(maxsize, t):
+  at = leafduration - t
+  if at < leafmaturation:
+    return maxsize * ((at*0.5/float(leafmaturation))+0.5)
+  else:
+      return maxsize
+ 
+def branch_angle(nc):
+    return 30+ 60*(nc/float(nbcycle))
+ 
+Axiom: !(0.1)I(0.5,0.1)A(stagelength,nbcycle)
+ 
+derivation length: nbcycle*stagelength
+production:
+A(t,nc) :
+  if t == 0:
+    if nc > 0:
+     produce V(nc,rd.randint(3,6),0)A(stagelength,nc-1)
+  else:
+     produce I(1,0.1)L(maxleafsize(t,stagelength)*1.5,leafduration)A(t-1,nc)
+ 
+B --> I(0.5,0.1)K(leafduration)B
+ 
+K(t) :
+  if t != 0:
+    produce K(t-1)
+  else:
+    produce
+ 
+L(maxsize,t) :
+  if t > 0:
+    produce L(maxsize,t-1)
+  else:
+    produce /(90)
+ 
+!(x) --> !(x+radinc)
+ 
+I(s,r) --> I(s,r+radinc)
+ 
+decomposition:
+maximum depth: 6
+V(nc,nbaxe,i) :
+  if i < nbaxe:
+    produce  [/(360*i/nbaxe)+(branch_angle(nc))B]V(nc,nbaxe,i+1)
+  else:
+    produce
+ 
+homomorphism:
+I(a,r) --> F(a,r)
+L(maxsize,t) --> /(90)[+(120)/(-60);(2)~l(leafsize(maxsize,t))][-(120)/(60);(2)~l(leafsize(maxsize,t))]
+ 
+K(t) --> [/(rd.uniform(90+leafel-angdev,90+leafel+angdev))+(rd.uniform(90-angdev,90+angdev));(2)~l(leafsize(1,t))][/(-rd.uniform(90+leafel-angdev,90+leafel+angdev))+(rd.uniform(90-angdev,90+angdev));(2)~l(leafsize(1,t))]
+ 
+endlsystem
