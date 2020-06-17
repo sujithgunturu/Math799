@@ -100,49 +100,53 @@ for station in stations:
 
 import matplotlib.pyplot as plt
 plt.scatter(*zip(*errors))
-plt.axis([71006099999,71986099999, 0, 100])
+plt.axis([71006099999,71986099999, 0, 10])
+plt.xlabel('station Rank')
+plt.ylabel('Root mean square error')
 plt.show()   
     
     
 
 from operator import itemgetter
 sortedlist = sorted(errors, key=itemgetter(1))
-
 toplotx = []
 toploty = []
 for i in stations[14]:
     toplotx.append(i["time"])
     toploty.append(i["temp"])
-import matplotlib.pyplot as slt 
-slt.plot(xdash,ypredicted,'r', label='interp/extrap')
-slt.plot(x,y, 'b--', label='data')
-slt.plot(toplotx, toploty , 'r', label= "station")
-slt.legend()
+
+plt.plot(xdash,ypredicted,'r', label='interp/extrap')
+plt.plot(x,y, 'b--', label='data')
+plt.plot(toplotx, toploty , label= "station")
+plt.legend()
+plt.show()
+
+import copy
+a = copy.deepcopy(sortedlist)
+for i in range(len(a)):
+    del a[i][0]
+    a[i].insert(0, i)
+plt.scatter(*zip(*a))
+plt.show()   
 
 
-#a = sortedlist[:]
-#for i in range(len(a)):
-#    del a[i][0]
-#    a[i].insert(0, i)
-#plt.scatter(*zip(*a))
-#plt.axis([1,100, 0, 1000])
-#plt.show()   
-
-
-#toplotx = []
-#toploty = []
-#All = []
-#for station in stations:
-    #for i in stations:
-    #    toplotx.append(i["time"])
-    #    toploty.append(i["temp"])
-    #    All.append([toplotx, toploty])
-    #    toplotx =[]
-    #    toploty = []
-#import matplotlib.pyplot as slt 
-#slt.plot(xdash,ypredicted,'r', label='interp/extrap')
-#slt.plot(x,y, 'b--', label='data')
-#for k in range(10)
-    #slt.plot(*zip(*All[k]),'r')
-    #slt.axis([0, 2400, 0, 30])
-#slt.legend()
+toplotx = []
+toploty = []
+Allfirst = []
+Allsecond = []
+import matplotlib.pyplot as plt 
+for station in stations:
+    for e, i in enumerate(station):
+        toplotx.append(i["time"])
+        toploty.append(i["temp"])       
+        Allfirst.append([toplotx[0], toploty[0]])
+        toplotx = []
+        toploty = []
+    Allsecond.append(Allfirst)
+    Allfirst = []        
+plt.plot(xdash,ypredicted,'r', label='interp/extrap')
+plt.plot(x,y, 'b--', label='data')
+for k in range(len(stations)):
+    plt.plot(*zip(*Allsecond[k])) 
+plt.legend()
+plt.show()
